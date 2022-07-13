@@ -1,20 +1,28 @@
 // explanation of Object.hasOwnProperty.call:
+//I guess this is more elegant, but I think Object.keys creates a list, which seems like a waste of space
+// if you can iterate with a forin instead. But I guess I could make an object iterator if I really wanted to save that space
+function copyProp(objA, objB, props) {
+  if (props == null) props = Object.keys(objB);
 
-// The main reason originally was because it is already in my forin snippet, but I researched on that, and the user could have
-// created an object with Object.create(null), which makes it safer this way
+  for (const prop of props) {
+    if (Object.hasOwnProperty.call(objB, prop)) {
+      objA[prop] = objB[prop];
+    }
+  }
+}
+
+function* objIterator(ob) {
+  for (const prop in ob) {
+    yield prop;
+  }
+}
 
 function copyProp(objA, objB, props) {
-  if (props == null) {
-    for (const prop in objB) {
-      if (Object.hasOwnProperty.call(objB, prop)) {
-        objA[prop] = objB[prop];
-      }
-    }
-  } else {
-    for (const prop of props) {
-      if (Object.hasOwnProperty.call(objB, prop)) {
-        objA[prop] = objB[prop];
-      }
+  if (props == null) props = objIterator(objB);
+
+  for (const prop of props) {
+    if (Object.hasOwnProperty.call(objB, prop)) {
+      objA[prop] = objB[prop];
     }
   }
 }
